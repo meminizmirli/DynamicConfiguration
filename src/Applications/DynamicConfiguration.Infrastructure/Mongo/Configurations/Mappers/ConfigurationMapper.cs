@@ -6,51 +6,65 @@ namespace DynamicConfiguration.Infrastructure.Mongo.Configurations.Mappers
 {
     public static partial class ConfigurationMapper
     {
-        public static ConfigurationEntity Map(this Configuration orderPackage) => ConfigurationEntity.Map(orderPackage);
-        public static Configuration Map(this ConfigurationEntity orderPackageEntity) => orderPackageEntity?.ToDomain();
-        public static ConfigurationRedisDto MapToRedisDto(this ConfigurationEntity orderPackageEntity) => orderPackageEntity?.ToRedisDto();
-    }
-
-    public static partial class ConfigurationMapper
-    {
-        public static ConfigurationEntity Create(this Configuration configuration)
+        public static ConfigurationEntity ToEntity(this Configuration configuration)
         {
-            return new ConfigurationEntity(
-                name: configuration.Name,
-                type: configuration.Type.Key,
-                value: configuration.Value,
-                applicationName: configuration.ApplicationName,
-                status: configuration.Status);
+            if (configuration == null) return null;
+
+            return new ConfigurationEntity
+            {
+                Id = configuration.Id,
+                IsDeleted = configuration.IsDeleted,
+                CreatedAt = configuration.CreatedAt,
+                UpdatedAt = configuration.UpdatedAt,
+                Status = configuration.Status,
+                Name = configuration.Name,
+                Type = configuration.Type.Key,
+                Value = configuration.Value,
+                ApplicationName = configuration.ApplicationName
+            };
         }
     }
 
     public static partial class ConfigurationMapper
     {
-        public static ConfigurationEntity Update(this Configuration configuration)
+        public static Configuration ToDomain(this ConfigurationEntity configurationEntity)
         {
-            return new ConfigurationEntity(
-                id: configuration.Id,
-                isDeleted: configuration.IsDeleted,
-                createdAt: configuration.CreatedAt,
-                updatedAt: configuration.UpdatedAt,
-                status: configuration.Status,
-                name: configuration.Name,
-                type: configuration.Type.Key,
-                value: configuration.Value,
-                applicationName: configuration.ApplicationName);
+            if (configurationEntity == null) return null;
+
+            return Configuration.Map(
+                id: configurationEntity.Id,
+                isDeleted: configurationEntity.IsDeleted,
+                createdAt: configurationEntity.CreatedAt,
+                updatedAt: configurationEntity.UpdatedAt,
+                status: configurationEntity.Status,
+                name: configurationEntity.Name,
+                type: configurationEntity.Type,
+                value: configurationEntity.Value,
+                applicationName: configurationEntity.ApplicationName);
+        }
+
+        public static ConfigurationRedisDto ToRedisDto(this ConfigurationEntity configurationEntity)
+        {
+            if (configurationEntity == null) return null;
+
+            return ConfigurationRedisDto.Map(
+                name: configurationEntity.Name,
+                type: configurationEntity.Type,
+                value: configurationEntity.Value,
+                applicationName: configurationEntity.ApplicationName);
         }
     }
 
     public static partial class ConfigurationMapper
     {
-        public static void WriteChanges(this Configuration linkedAccount, ConfigurationEntity linkedAccountEntity)
+        public static void WriteChanges(this Configuration configuration, ConfigurationEntity configurationEntity)
         {
-            linkedAccount.SetChanges(id: linkedAccountEntity.Id);
+            configuration.SetChanges(id: configurationEntity.Id);
         }
-        public static void WriteChanges(this List<Configuration> linkedAccounts, List<ConfigurationEntity> linkedAccountEntities)
+        public static void WriteChanges(this List<Configuration> configurations, List<ConfigurationEntity> configurationEntities)
         {
-            for (int i = 0; i < linkedAccounts.Count; i++)
-                linkedAccounts[i].WriteChanges(linkedAccountEntities[i]);
+            for (int i = 0; i < configurations.Count; i++)
+                configurations[i].WriteChanges(configurationEntities[i]);
         }
     }
 }

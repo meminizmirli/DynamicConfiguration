@@ -19,13 +19,13 @@ namespace DynamicConfiguration.Infrastructure.Mongo.Configurations.Adapters
 
         public async Task<List<Configuration>> ListAsync()
         {
-            var configurations = (await _configurationRepository.ListAsync())?.Select(x => x.Map()).ToList();
+            var configurations = (await _configurationRepository.ListAsync())?.Select(x => x.ToDomain()).ToList();
             return configurations;
         }
 
         public async Task<List<ConfigurationRedisDto>> ListForRedisAsync(string aplicationName)
         {
-            var configurations = (await _configurationRepository.ListAsync(aplicationName))?.Select(x => x.MapToRedisDto()).ToList();
+            var configurations = (await _configurationRepository.ListAsync(aplicationName))?.Select(x => x.ToRedisDto()).ToList();
             return configurations;
         }
 
@@ -37,7 +37,7 @@ namespace DynamicConfiguration.Infrastructure.Mongo.Configurations.Adapters
 
         public async Task<bool> CreateAsync(Configuration configuration)
         {
-            var configurationEntity = configuration.Create();
+            var configurationEntity = configuration.ToEntity();
             bool result = await _configurationRepository.CreateAsync(configurationEntity);
             configuration.WriteChanges(configurationEntity);
             return result;
@@ -45,14 +45,14 @@ namespace DynamicConfiguration.Infrastructure.Mongo.Configurations.Adapters
 
         public async Task<bool> UpdateAsync(Configuration configuration)
         {
-            var configurationEntity = configuration.Update();
+            var configurationEntity = configuration.ToEntity();
             bool result = await _configurationRepository.UpdateAsync(configurationEntity);
             return result;
         }
 
         public async Task<bool> RemoveAsync(Configuration configuration)
         {
-            var configurationEntity = configuration.Update();
+            var configurationEntity = configuration.ToEntity();
             bool result = await _configurationRepository.UpdateAsync(configurationEntity);
             return result;
         }
