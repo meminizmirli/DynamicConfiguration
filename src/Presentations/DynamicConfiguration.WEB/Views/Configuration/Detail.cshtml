@@ -1,0 +1,79 @@
+﻿@using DynamicConfiguration.Core.Domain.Constants
+@using DynamicConfiguration.Domain.Configurations.Values
+@model DynamicConfiguration.Application.Configurations.Dtos.ConfigurationDto
+
+@{
+    ViewBag.Title = "Configuration Detail";
+    Layout = "_Layout";
+    var types = new List<SelectListItem>()
+    {
+        new SelectListItem("Choose", ""),
+        new SelectListItem(PropertyType.String.DisplayName, PropertyType.String.Key),
+        new SelectListItem(PropertyType.Boolean.DisplayName, PropertyType.Boolean.Key),
+        new SelectListItem(PropertyType.Integer.DisplayName, PropertyType.Integer.Key),
+        new SelectListItem(PropertyType.Double.DisplayName, PropertyType.Double.Key),
+    };
+    var statuses = new List<SelectListItem>()
+    {
+        new SelectListItem(nameof(BaseStatus.Active), true.ToString()),
+        new SelectListItem(nameof(BaseStatus.Passive), false.ToString())
+    };
+}
+
+
+<form id="configurationForm">
+    @Html.HiddenFor(m=> m.Id)
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label for="Name">Name</label>
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <label for="Type">Type</label>
+        @Html.DropDownListFor(m => m.Type, types, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <label for="Value">Value</label>
+        @Html.TextBoxFor(m => m.Value, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <label for="AplicationName">Application Name</label>
+        @Html.TextBoxFor(m => m.ApplicationName, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <label for="Status">Status</label>
+        @Html.DropDownListFor(m => m.Status, statuses, new { @class = "form-control" })
+    </div>
+    <button type="submit" class="btn btn-primary">@(string.IsNullOrWhiteSpace(Model.Id) ? "Create" : "Update")</button>
+</form>
+
+@section Scripts
+{
+    <script>
+        $("#configurationForm").submit(function(e) {
+            e.preventDefault();
+            var datas = $(this).serializeArray();
+            var formData = new FormData();
+            $.each(datas,
+                function(i, e) {
+                    formData.append(e.name, e.value);
+                });
+            $.ajax({
+                url: '/Configuration',
+                type: "@(string.IsNullOrWhiteSpace(Model.Id) ? "POST" : "PUT")",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    if (data.success == true)
+                        window.location.href = window.location.origin + "/Configuration/list";
+                    else
+                        alert(data.errors);
+                },
+                error: function(data) {
+                    alert(data.responseText);
+                }
+            });
+        });
+    </script>
+}

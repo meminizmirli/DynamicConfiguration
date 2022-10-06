@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Hubs\Mongo.Hub\Mongo.Hub.csproj" />
+    <ProjectReference Include="..\DynamicConfiguration.Core.Domain\DynamicConfiguration.Core.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
