@@ -7,7 +7,7 @@
 - Redis
 - RabbitMq
 
-## Tecgnologies
+## Technologies
 
 - .NET 5
 - MongoDb
